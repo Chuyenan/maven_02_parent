@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <import resource="SpringConfig_dao.xml"/>
+    <!--service层配置文件开始-->
+    <!--配置扫描文件-->
+    <context:component-scan base-package="com.itzcy.service"/>
+
+    <!--AOP面向切面编程，切面就是切入点和通知的组合-->
+    <!--配置事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!--配置事务的通知-->
+    <tx:advice id="advice">
+        <tx:attributes>
+            <tx:method name="find*" read-only="true"/>
+            <tx:method name="add*"/>
+            <tx:method name="del*"/>
+            <tx:method name="upd*"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!--配置AOP切面-->
+    <aop:config>
+        <!--配置切入点表达式-->
+        <aop:pointcut id="ptn" expression="execution(* com.itzcy.service.impl.*.*(..))"/>
+        <!--组合切入点和通知-->
+        <aop:advisor advice-ref="advice" pointcut-ref="ptn"/>
+    </aop:config>
+    <!--service层配置文件结束-->
+
+</beans>
